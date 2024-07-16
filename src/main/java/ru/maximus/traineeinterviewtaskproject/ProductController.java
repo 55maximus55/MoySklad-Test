@@ -58,4 +58,17 @@ public class ProductController {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
+    @DeleteMapping("/products/delete")
+    public ResponseEntity<Object> deleteProduct(@RequestBody Product product) {
+        if (product.getId() == null) {
+            return new ResponseEntity<>(new Error(HttpStatus.BAD_REQUEST.value(), "Product id is null"), HttpStatus.BAD_REQUEST);
+        }
+        if (productRepository.getProduct(product.getId()) == null) {
+            return new ResponseEntity<>(new Error(HttpStatus.NOT_FOUND.value(), "Product with id " + product.getId() + " not found"), HttpStatus.NOT_FOUND);
+        }
+
+        productRepository.deleteProduct(product.getId());
+        return new ResponseEntity<>(product, HttpStatus.OK);
+    }
+
 }

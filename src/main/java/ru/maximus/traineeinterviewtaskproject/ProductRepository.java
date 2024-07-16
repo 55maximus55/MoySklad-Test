@@ -42,4 +42,8 @@ public class ProductRepository {
         return null;
     }
 
+    public void deleteProduct(long id) {
+        products.remove(id);
+    }
+
 }
