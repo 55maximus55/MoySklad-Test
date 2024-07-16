@@ -24,7 +24,7 @@ public class ProductRepository {
         if (product.getDescription() == null) {
             product.setDescription("");
         } else if (product.getDescription().length() > 4096) {
-            return "Product description too long";
+            return "Product description is longer than 4096 characters";
         }
 
         if (product.getPrice() == null) {
@@ -41,7 +41,5 @@ public class ProductRepository {
         products.put(product.getId(), product);
         return null;
     }
-
-
 
 }
