@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>ru.maximus</groupId>
-	<artifactId>TraineeInterviewTaskProject</artifactId>
+	<artifactId>MySklad</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>TraineeInterviewTaskProject</name>
 	<description>TraineeInterviewTaskProject</description>
