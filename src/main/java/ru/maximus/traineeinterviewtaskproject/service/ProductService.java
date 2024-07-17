@@ -2,14 +2,14 @@ package ru.maximus.traineeinterviewtaskproject.service;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import ru.maximus.traineeinterviewtaskproject.entity.Product;
+import ru.maximus.traineeinterviewtaskproject.filter.ProductFilter;
+import ru.maximus.traineeinterviewtaskproject.filter.ProductSpecification;
 import ru.maximus.traineeinterviewtaskproject.repository.ProductRepository;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
-import java.util.HashMap;
 
 @Service
 public class ProductService {
@@ -23,8 +23,16 @@ public class ProductService {
         else throw new FileNotFoundException("Product with " + id + " not found");
     }
 
-    public Collection<Product> getAllProducts() {
-        return productRepository.findAll();
+    public Collection<Product> getAllProducts(
+            String sortBy, String order, String priceMin, String priceMax, String name
+    ) {
+
+        Double minPrice = priceMin == null ? null : Double.valueOf(priceMin);
+        Double maxPrice = priceMax == null ? null : Double.valueOf(priceMax);
+
+        return productRepository.findAll(
+                ProductSpecification.filterBy(new ProductFilter(name, minPrice, maxPrice))
+        );
     }
 
     public void addProduct(Product product) {

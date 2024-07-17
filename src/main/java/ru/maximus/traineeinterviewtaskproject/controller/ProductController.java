@@ -1,7 +1,6 @@
 package ru.maximus.traineeinterviewtaskproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +18,15 @@ public class ProductController {
     private final ProductService productService = new ProductService();
 
     @GetMapping("")
-    public ResponseEntity<Object> getAllProducts() {
-        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+    public ResponseEntity<Object> getAllProducts(@RequestParam Map<String, String> params) {
+        return new ResponseEntity<>(
+                productService.getAllProducts(
+                        params.get("sortBy"),
+                        params.get("order"),
+                        params.get("priceMin"),
+                        params.get("priceMax"),
+                        params.get("name")
+                ), HttpStatus.OK);
     }
 
     @GetMapping("{id}")
