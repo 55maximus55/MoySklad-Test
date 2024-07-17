@@ -1,23 +1,30 @@
 package ru.maximus.traineeinterviewtaskproject.service;
 
 import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.stereotype.Service;
 import ru.maximus.traineeinterviewtaskproject.entity.Product;
+import ru.maximus.traineeinterviewtaskproject.repository.ProductRepository;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
 
+@Service
 public class ProductService {
 
-    private final HashMap<Long, Product> products = new HashMap<>();
-    private long nextProductId = 0;
+    @Autowired
+    private ProductRepository productRepository;
 
-    public Product getProduct(long id) {
-        return products.get(id);
+    public Product getProduct(long id) throws FileNotFoundException {
+        if (productRepository.existsById(id))
+            return productRepository.findById(id).get();
+        else throw new FileNotFoundException("Product with " + id + " not found");
     }
 
     public Collection<Product> getAllProducts() {
-        return products.values();
+        return productRepository.findAll();
     }
 
     public void addProduct(Product product) {
@@ -40,8 +47,7 @@ public class ProductService {
             product.setInStock(false);
         }
 
-        product.setId(nextProductId++);
-        products.put(product.getId(), product);
+        productRepository.save(product);
     }
 
     public Product updateProduct(Product updateProduct) throws Exception {
@@ -60,14 +66,12 @@ public class ProductService {
         }
         if (updateProduct.getInStock() != null) product.setInStock(updateProduct.getInStock());
 
+        productRepository.save(product);
         return product;
     }
 
-    public void deleteProduct(long id) throws FileNotFoundException {
-        if (products.containsKey(id))
-            products.remove(id);
-        else
-            throw new FileNotFoundException("Product with id " + id + " not found");
+    public void deleteProduct(long id) {
+        productRepository.deleteById(id);
     }
 
 }

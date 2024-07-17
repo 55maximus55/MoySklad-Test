@@ -1,5 +1,7 @@
 package ru.maximus.traineeinterviewtaskproject.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +15,7 @@ import java.util.Map;
 @RequestMapping("products")
 public class ProductController {
 
+    @Autowired
     private final ProductService productService = new ProductService();
 
     @GetMapping("")
@@ -40,7 +43,7 @@ public class ProductController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<Object> deleteProduct(@RequestBody Product product) throws FileNotFoundException {
+    public ResponseEntity<Object> deleteProduct(@RequestBody Product product) {
         productService.deleteProduct(product.getId());
         return new ResponseEntity<>(Map.of(
                 "status", HttpStatus.OK.value(),
