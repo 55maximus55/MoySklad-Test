@@ -1,41 +1,48 @@
-package ru.maximus.traineeinterviewtaskproject;
+package ru.maximus.traineeinterviewtaskproject.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.maximus.traineeinterviewtaskproject.Error;
+import ru.maximus.traineeinterviewtaskproject.service.ProductService;
+import ru.maximus.traineeinterviewtaskproject.entity.Product;
+
+import java.util.Map;
 
 @RestController
+@RequestMapping("products")
 public class ProductController {
 
-    private final ProductRepository productRepository = new ProductRepository();
+    private final ProductService productService = new ProductService();
 
-    @GetMapping("/products/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<Object> getProduct(@PathVariable long id) {
-        Product product = productRepository.getProduct(id);
+        Product product = productService.getProduct(id);
         if (product == null) {
             return new ResponseEntity<>(new Error(HttpStatus.NOT_FOUND.value(), "Product with id " + id + " not found"), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @GetMapping("/products/all")
+    @GetMapping("")
     public ResponseEntity<Object> getAllProducts() {
-        return new ResponseEntity<>(productRepository.getAllProducts(), HttpStatus.OK);
+        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
-    @PostMapping("/products/create")
-    public ResponseEntity<Object> createProduct(@RequestBody Product product) {
-        String error = productRepository.addProduct(product);
+    @PostMapping("create")
+    public ResponseEntity<Object> createProduct(@RequestBody Product product) throws Exception {
+        String error = productService.addProduct(product);
         if (error != null) {
-            return new ResponseEntity<>(new Error(HttpStatus.BAD_REQUEST.value(), error), HttpStatus.BAD_REQUEST);
+            throw new Exception(error);
+//            return new ResponseEntity<>(new Error(HttpStatus.BAD_REQUEST.value(), error), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
 
-    @PutMapping("/products/update")
+    @PutMapping("update")
     public ResponseEntity<Object> updateProduct(@RequestBody Product updateProduct) {
         if (updateProduct.getId() == null) return new ResponseEntity<>(new Error(HttpStatus.BAD_REQUEST.value(), "Product id is null"), HttpStatus.BAD_REQUEST);
-        Product product = productRepository.getProduct(updateProduct.getId());
+        Product product = productService.getProduct(updateProduct.getId());
         if (product == null) {
             return new ResponseEntity<>(new Error(HttpStatus.BAD_REQUEST.value(), "Product with id " + updateProduct.getId() + " not found"), HttpStatus.BAD_REQUEST);
         }
@@ -58,16 +65,16 @@ public class ProductController {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @DeleteMapping("/products/delete")
+    @DeleteMapping("delete")
     public ResponseEntity<Object> deleteProduct(@RequestBody Product product) {
         if (product.getId() == null) {
             return new ResponseEntity<>(new Error(HttpStatus.BAD_REQUEST.value(), "Product id is null"), HttpStatus.BAD_REQUEST);
         }
-        if (productRepository.getProduct(product.getId()) == null) {
+        if (productService.getProduct(product.getId()) == null) {
             return new ResponseEntity<>(new Error(HttpStatus.NOT_FOUND.value(), "Product with id " + product.getId() + " not found"), HttpStatus.NOT_FOUND);
         }
 
-        productRepository.deleteProduct(product.getId());
+        productService.deleteProduct(product.getId());
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 

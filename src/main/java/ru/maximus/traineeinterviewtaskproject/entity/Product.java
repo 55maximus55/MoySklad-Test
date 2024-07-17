@@ -1,4 +1,4 @@
-package ru.maximus.traineeinterviewtaskproject;
+package ru.maximus.traineeinterviewtaskproject.entity;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,9 +1,11 @@
-package ru.maximus.traineeinterviewtaskproject;
+package ru.maximus.traineeinterviewtaskproject.service;
+
+import ru.maximus.traineeinterviewtaskproject.entity.Product;
 
 import java.util.Collection;
 import java.util.HashMap;
 
-public class ProductRepository {
+public class ProductService {
 
     private final HashMap<Long, Product> products = new HashMap<>();
     private long nextProductId = 0;
