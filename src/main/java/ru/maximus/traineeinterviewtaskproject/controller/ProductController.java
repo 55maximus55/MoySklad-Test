@@ -2,9 +2,7 @@ package ru.maximus.traineeinterviewtaskproject.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
-import ru.maximus.traineeinterviewtaskproject.Error;
 import ru.maximus.traineeinterviewtaskproject.service.ProductService;
 import ru.maximus.traineeinterviewtaskproject.entity.Product;
 
@@ -17,16 +15,16 @@ public class ProductController {
 
     private final ProductService productService = new ProductService();
 
+    @GetMapping("")
+    public ResponseEntity<Object> getAllProducts() {
+        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+    }
+
     @GetMapping("{id}")
     public ResponseEntity<Object> getProduct(@PathVariable long id) throws Exception {
         Product product = productService.getProduct(id);
         if (product == null) throw new FileNotFoundException("Product with id " + id + " not found");
         return new ResponseEntity<>(product, HttpStatus.OK);
-    }
-
-    @GetMapping("")
-    public ResponseEntity<Object> getAllProducts() {
-        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
     @PostMapping("create")
@@ -44,7 +42,10 @@ public class ProductController {
     @DeleteMapping("delete")
     public ResponseEntity<Object> deleteProduct(@RequestBody Product product) throws FileNotFoundException {
         productService.deleteProduct(product.getId());
-        return new ResponseEntity<>(Map.of("status", HttpStatus.OK.value()), HttpStatus.OK);
+        return new ResponseEntity<>(Map.of(
+                "status", HttpStatus.OK.value(),
+                "message", "Product with id " + product.getId() + " was deleted"
+        ), HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -1,9 +1,6 @@
 package ru.maximus.traineeinterviewtaskproject.service;
 
 import org.apache.coyote.BadRequestException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import ru.maximus.traineeinterviewtaskproject.Error;
 import ru.maximus.traineeinterviewtaskproject.entity.Product;
 
 import java.io.FileNotFoundException;
