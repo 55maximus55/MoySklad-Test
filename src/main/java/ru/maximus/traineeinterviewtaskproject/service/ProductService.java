@@ -2,6 +2,7 @@ package ru.maximus.traineeinterviewtaskproject.service;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.maximus.traineeinterviewtaskproject.entity.Product;
 import ru.maximus.traineeinterviewtaskproject.filter.ProductFilter;
@@ -26,12 +27,19 @@ public class ProductService {
     public Collection<Product> getAllProducts(
             String sortBy, String order, String priceMin, String priceMax, String name
     ) {
+        Sort sort = Sort.unsorted();
+        if (sortBy != null) {
+            Sort.Direction direction = (order == null || order.equals("asc"))
+                    ? Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, sortBy);
+        }
 
         Double minPrice = priceMin == null ? null : Double.valueOf(priceMin);
         Double maxPrice = priceMax == null ? null : Double.valueOf(priceMax);
 
         return productRepository.findAll(
-                ProductSpecification.filterBy(new ProductFilter(name, minPrice, maxPrice))
+                ProductSpecification.filterBy(new ProductFilter(name, minPrice, maxPrice)),
+                sort
         );
     }
 

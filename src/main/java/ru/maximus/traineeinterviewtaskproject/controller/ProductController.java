@@ -37,7 +37,7 @@ public class ProductController {
     }
 
     @PostMapping("create")
-    public ResponseEntity<Object> createProduct(@RequestBody Product product) throws Exception {
+    public ResponseEntity<Object> createProduct(@RequestBody Product product) {
         productService.addProduct(product);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
