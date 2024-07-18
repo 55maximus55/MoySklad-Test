@@ -15,8 +15,11 @@ import java.util.Collection;
 @Service
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
     public Product getProduct(long id) throws FileNotFoundException {
         if (productRepository.existsById(id))
@@ -24,23 +27,8 @@ public class ProductService {
         else throw new FileNotFoundException("Product with " + id + " not found");
     }
 
-    public Collection<Product> getAllProducts(
-            String sortBy, String order, String priceMin, String priceMax, String name
-    ) {
-        Sort sort = Sort.unsorted();
-        if (sortBy != null) {
-            Sort.Direction direction = (order == null || order.equals("asc"))
-                    ? Sort.Direction.ASC : Sort.Direction.DESC;
-            sort = Sort.by(direction, sortBy);
-        }
-
-        Double minPrice = priceMin == null ? null : Double.valueOf(priceMin);
-        Double maxPrice = priceMax == null ? null : Double.valueOf(priceMax);
-
-        return productRepository.findAll(
-                ProductSpecification.filterBy(new ProductFilter(name, minPrice, maxPrice)),
-                sort
-        );
+    public Collection<Product> getAllProducts(Sort sort, ProductFilter productFilter) {
+        return productRepository.findAll(ProductSpecification.filterBy(productFilter), sort);
     }
 
     public void addProduct(Product product) {

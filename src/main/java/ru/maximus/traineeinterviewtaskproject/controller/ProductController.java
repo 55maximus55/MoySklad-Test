@@ -1,9 +1,11 @@
 package ru.maximus.traineeinterviewtaskproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.maximus.traineeinterviewtaskproject.filter.ProductFilter;
 import ru.maximus.traineeinterviewtaskproject.service.ProductService;
 import ru.maximus.traineeinterviewtaskproject.entity.Product;
 
@@ -14,19 +16,33 @@ import java.util.Map;
 @RequestMapping("products")
 public class ProductController {
 
-    @Autowired
-    private final ProductService productService = new ProductService();
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping("")
-    public ResponseEntity<Object> getAllProducts(@RequestParam Map<String, String> params) {
-        return new ResponseEntity<>(
-                productService.getAllProducts(
-                        params.get("sortBy"),
-                        params.get("order"),
-                        params.get("priceMin"),
-                        params.get("priceMax"),
-                        params.get("name")
-                ), HttpStatus.OK);
+    public ResponseEntity<Object> getAllProducts(
+            @RequestParam(defaultValue = "name") String sortBy,
+            String order,
+            @RequestParam(defaultValue = "") String filterName,
+            String priceMin,
+            String priceMax) {
+        Sort.Direction sortDirection = Sort.Direction.ASC;
+        if (order != null && order.equals("desc")) sortDirection = Sort.Direction.DESC;
+        if (!(sortBy.equals("name") || filterName.equals("price"))) sortBy = "name";
+        Sort sort = Sort.by(sortDirection, sortBy);
+
+        Double minPrice = null;
+        Double maxPrice = null;
+        try {
+            minPrice = priceMin == null ? null : Double.valueOf(priceMin);
+            maxPrice = priceMax == null ? null : Double.valueOf(priceMax);
+        } catch (NumberFormatException e) {}
+        ProductFilter filter = new ProductFilter(filterName, minPrice, maxPrice);
+
+        return new ResponseEntity<>(productService.getAllProducts(sort, filter), HttpStatus.OK);
     }
 
     @GetMapping("{id}")
